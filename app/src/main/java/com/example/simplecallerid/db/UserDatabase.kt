@@ -7,8 +7,8 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.example.simplecallerid.models.User
 
-@Database(entities = [User::class], version = 2)
-@TypeConverters(User.PhoneListConverter::class)
+@Database(entities = [User::class], version = 1)
+@TypeConverters(User.PhoneTypeConverter::class)
 abstract class UserDatabase: RoomDatabase() {
     abstract fun userDao(): UserDao
 
@@ -22,7 +22,7 @@ abstract class UserDatabase: RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     UserDatabase::class.java,
-                    "Word_database"
+                    "user_database"
                 ).build()
                 INSTANCE = instance
                 return instance

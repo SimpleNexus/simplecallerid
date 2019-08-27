@@ -18,7 +18,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.simplecallerid.R
-import com.example.simplecallerid.models.Phone
 import com.example.simplecallerid.models.PhoneType
 import com.example.simplecallerid.models.User
 import kotlinx.android.synthetic.main.main_fragment.*
@@ -78,10 +77,9 @@ class MainFragment : Fragment() {
                 val tempUser = User(
                     dialog.first_name_input.text.toString(),
                     dialog.last_name_input.text.toString(),
-                    Phone(
                         dialog.phone_input.text.toString(),
                         PhoneType.parse(dialog.phone_type_spinner.selectedItem.toString())
-                    ))
+                    )
                 if (user == null) viewModel.insert(tempUser) else viewModel.update(tempUser)
             }
             .setNegativeButton(getString(R.string.cancel), null)
@@ -123,9 +121,9 @@ class MainFragment : Fragment() {
         dialog.first_name_input.setText(user.firstName)
         dialog.last_name_input.setText(user.lastName)
         initDialogPhoneFields(dialog)
-        dialog.phone_input.setText(user.phoneNumber.original)
+        dialog.phone_input.setText(user.phoneNumber)
         val phoneTypeArray = resources.getStringArray(R.array.phone_types)
-        val index = phoneTypeArray.indexOfFirst { it == user.phoneNumber.type.label }
+        val index = phoneTypeArray.indexOfFirst { it == user.phoneType.label }
         dialog.phone_type_spinner.setSelection(index)
     }
 
@@ -144,7 +142,7 @@ class MainFragment : Fragment() {
         inner class UserViewHolder(view: View): RecyclerView.ViewHolder(view) {
             fun bind(user: User) {
                 itemView.user_full_name.text = user.fullName
-                itemView.user_data.text = user.prettyPrintPhone()
+                itemView.user_data.text = user.prettyPrint
                 itemView.delete_user_button.setOnClickListener { viewModel.delete(user) }
                 itemView.layout.setOnClickListener { openUserDialog(user) }
             }

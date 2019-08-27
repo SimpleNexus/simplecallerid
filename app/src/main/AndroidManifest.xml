@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.simplecallerid">
 
     <application
@@ -9,6 +10,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <provider
+            android:name=".callerid.CallerIDProvider"
+            android:authorities="@string/callerid_authority"
+            android:readPermission="android.permission.READ_CONTACTS"
+            android:enabled="true"
+            android:exported="true">
+            <meta-data
+                android:name="android.content.ContactDirectory"
+                android:value="true"/>
+        </provider>
+
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

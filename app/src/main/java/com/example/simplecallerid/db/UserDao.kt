@@ -9,6 +9,9 @@ interface UserDao {
     @Query("SELECT * FROM user_table")
     fun getAllUsers(): LiveData<List<User>>
 
+    @Query("SELECT * FROM user_table")
+    suspend fun getUsersList(): List<User>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(user: User)
 
@@ -16,7 +19,7 @@ interface UserDao {
     suspend fun update(user: User)
 
     @Delete
-    fun delete(user: User)
+    suspend fun delete(user: User)
 
     @Query("DELETE FROM user_table")
     fun deleteAll()
