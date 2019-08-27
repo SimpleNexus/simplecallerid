@@ -3,11 +3,11 @@ package com.example.simplecallerid.models
 import androidx.room.*
 import android.telephony.PhoneNumberUtils
 
-@Entity(tableName = "user_table", primaryKeys = ["first_name", "last_name"])
+@Entity(tableName = "user_table")
 data class User(
     @ColumnInfo(name = "first_name") var firstName: String,
     @ColumnInfo(name = "last_name") var lastName: String,
-    @ColumnInfo(name = "phone_number") var phoneNumber: String,
+    @PrimaryKey @ColumnInfo(name = "phone_number") var phoneNumber: String,
     @ColumnInfo(name = "phone_type") var phoneType: PhoneType
 ) {
     var fullName: String = "$firstName $lastName"
