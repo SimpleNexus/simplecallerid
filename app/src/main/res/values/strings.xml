@@ -12,7 +12,6 @@
     <string name="cancel">Cancel</string>
     <string name="add_user">Add User</string>
     <string name="add_phone_number">Add Phone Number</string>
-    <string name="callerid_authority">com.example.simplecallerid.callerid</string>
     <string-array name="phone_types">
         <item>Home</item>
         <item>Cell</item>
