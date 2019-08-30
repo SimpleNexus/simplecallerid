@@ -1,39 +1,47 @@
 package com.example.simplecallerid.models
 
 import androidx.room.*
-import com.google.gson.Gson
+import android.telephony.PhoneNumberUtils
 
-@Entity(tableName = "user_table", primaryKeys = ["first_name", "last_name"])
+@Entity(tableName = "user_table")
 data class User(
     @ColumnInfo(name = "first_name") var firstName: String,
     @ColumnInfo(name = "last_name") var lastName: String,
-    @ColumnInfo(name = "phone_number") var phoneNumber: Phone
+    @PrimaryKey @ColumnInfo(name = "phone_number") var phoneNumber: String,
+    @ColumnInfo(name = "phone_type") var phoneType: PhoneType
 ) {
-
     var fullName: String = "$firstName $lastName"
+    var prettyPrint: String = "${phoneType.label}: $phoneNumber"
+    var phoneLabel: String = "Simple Caller ID App | ${phoneType.label}"
 
-    fun prettyPrintPhone(): String {
-        return "${phoneNumber.type.label}: ${phoneNumber.formatted}"
-    }
-
-    fun hasPhone(phoneNumber: String): Boolean {
-        return this.phoneNumber.match(phoneNumber)
-    }
+    fun hasPhone(phoneNumber: String): Boolean = PhoneNumberUtils.compare(this.phoneNumber, phoneNumber)
 
     override fun equals(other: Any?): Boolean {
         val that = other as? User ?: return false
         return this.firstName == that.firstName
                 && this.lastName == that.lastName
                 && this.phoneNumber == that.phoneNumber
+                && this.phoneType == that.phoneType
     }
 
     override fun hashCode(): Int = super.hashCode()
 
-    class PhoneListConverter {
+    class PhoneTypeConverter {
         @TypeConverter
-        fun phoneToJson(phone: Phone): String = Gson().toJson(phone)
+        fun toString(type: PhoneType) = type.label
 
         @TypeConverter
-        fun phoneFromJson(phone: String): Phone = Gson().fromJson(phone, Phone::class.java)
+        fun toType(type: String) = PhoneType.parse(type)
+    }
+}
+
+enum class PhoneType(var label: String) {
+    HOME_PHONE("Home"),
+    CELL_PHONE("Cell"),
+    WORK_PHONE("Work");
+
+    companion object {
+        fun parse(type: String) = values().firstOrNull { it.label == type }
+            ?: HOME_PHONE
     }
 }
