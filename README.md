@@ -169,8 +169,9 @@ PHONE_LOOKUP -> {
 You should now be able to run your app on your phone.
 Add a user with a phone number you don't have saved to a contact on your phone.
 Call yourself from that phone number and you should see something like this:
-| Call Shade | Call Screen |
-| --- | --- |
-| ![Call Shade](./assets/photos/scid_callshade.png) | ![Call Screen](./assets/photos/scid_callscreen.png) |
+<p float="left">
+  <img src="./assets/photos/scid_callshade.png" width="49%"/>
+  <img src="./assets/photos/scid_callscreen.png" width="49%"/>
+</p>
 
 Play around with it, have fun, and think of more ways this can be used.
