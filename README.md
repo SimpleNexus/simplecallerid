@@ -12,7 +12,6 @@ This article teaches how to display your users as caller ID data.
 Developing this in the SimpleNexus app was extremely difficult because of lack of documentation.
 The most helpful documentation found on this subject was in the Android docs regarding [ContactsContract.Directory](https://developer.android.com/reference/android/provider/ContactsContract.Directory) and [ContactsContract.PhoneLookup](https://developer.android.com/reference/android/provider/ContactsContract.PhoneLookup.html).
 But who doesn't like some real life code examples to learn from?
-<<<<<<< HEAD
 
 # Get Started
 
