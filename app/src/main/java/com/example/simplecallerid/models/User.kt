@@ -2,17 +2,19 @@ package com.example.simplecallerid.models
 
 import androidx.room.*
 import android.telephony.PhoneNumberUtils
+import java.util.*
 
 @Entity(tableName = "user_table")
 data class User(
     @ColumnInfo(name = "first_name") var firstName: String,
     @ColumnInfo(name = "last_name") var lastName: String,
-    @PrimaryKey @ColumnInfo(name = "phone_number") var phoneNumber: String,
+    @ColumnInfo(name = "phone_number") var phoneNumber: String,
     @ColumnInfo(name = "phone_type") var phoneType: PhoneType
 ) {
-    var fullName: String = "$firstName $lastName"
-    var prettyPrint: String = "${phoneType.label}: $phoneNumber"
-    var phoneLabel: String = "Simple Caller ID App | ${phoneType.label}"
+    @PrimaryKey var id: String = UUID.randomUUID().toString()
+    @Ignore var fullName: String = "$firstName $lastName"
+    @Ignore var prettyPrint: String = "${phoneType.label}: $phoneNumber"
+    @Ignore var phoneLabel: String = "Simple Caller ID App | ${phoneType.label}"
 
     fun hasPhone(phoneNumber: String): Boolean = PhoneNumberUtils.compare(this.phoneNumber, phoneNumber)
 
