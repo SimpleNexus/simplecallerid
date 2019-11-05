@@ -7,7 +7,6 @@ import android.content.res.AssetFileDescriptor
 import android.database.Cursor
 import android.database.MatrixCursor
 import android.net.Uri
-import android.os.Bundle
 import android.provider.ContactsContract.Directory
 import android.provider.ContactsContract.PhoneLookup
 import com.example.simplecallerid.R
