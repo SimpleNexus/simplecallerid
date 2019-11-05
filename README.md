@@ -3,7 +3,7 @@ Here at SimpleNexus, we sell software to mortgage companies.
 These companies can have hundreds of loan officers, and thousands of users.
 Company admins and especially loan officers wanted a way to differentiate between their app users and spam calls.
 A recent deploy to our app displays app user data as caller ID.
-Now when admins and loan officers receive phone calls from users not saved in their phone they can confidently answer.
+Now when admins and loan officers receive phone calls from users not saved in their phone they can confidentally answer.
 This caller ID functionality has many more practical applications.
 
 # Purpose
@@ -174,4 +174,80 @@ Call yourself from that phone number and you should see something like this:
   <img src="./assets/photos/scid_callscreen.png" width="49%"/>
 </p>
 
+# Caller ID Photos
+
+This section teaches how to add photos to the data return in caller ID.
+Minor edits are going to be made to the CallerIDProvider:
+
+First, a little setup is required:
+```
+// At the class level
+private lateinit var authorityUri: Uri
+
+// In the onCreate() after assigning val authority
+authorityUri = Uri.parse("content://$authority")
+
+// In the companion object
+private const val PRIMARY_PHOTO = 3
+private const val PRIMARY_PHOTO_URI = "photo/primary_photo"
+```
+
+Now provide support for the `photo/primary_photo` query. Update the `uriMatcher`:
+```
+uriMatcher.apply {
+    addURI(authority, "directories", DIRECTORIES)
+    addURI(authority, "phone_lookup/*", PHONE_LOOKUP)
+    addURI(authority, PRIMARY_PHOTO_URI, PRIMARY_PHOTO)
+}
+```
+
+Then update the `query` method:
+```
+PHONE_LOOKUP -> {
+    userRepository?.let { userRepo ->
+        val phoneNumber = uri.pathSegments[1]
+        val cursor = MatrixCursor(projection)
+        val user = runBlocking(Dispatchers.IO) { userRepo.getUser(phoneNumber) }
+        user?.let { u ->
+            projection?.map { column ->
+                when (column) {
+                    PhoneLookup._ID -> -1
+                    PhoneLookup.DISPLAY_NAME -> u.fullName
+                    PhoneLookup.LABEL -> u.phoneLabel
+                    PhoneLookup.PHOTO_THUMBNAIL_URI,
+                    PhoneLookup.PHOTO_URI -> Uri.withAppendedPath(authorityUri, PRIMARY_PHOTO_URI)
+                    else -> null
+                }
+            }?.let { cursor.addRow(it) }
+        }
+        return cursor
+    }
+}
+```
+
+What this does is tells the provider to start looking for an asset when `PRIMARY_PHOTO_URI` is requested.
+The provider will look in `openAssetFile`:
+```
+override fun openAssetFile(uri: Uri, mode: String): AssetFileDescriptor? {
+    return when(uriMatcher.match(uri)) {
+        PRIMARY_PHOTO -> context?.resources?.openRawResourceFd(R.raw.phineas)
+        else -> null
+    }
+}
+```
+
+This solution provides a photo that is obviously hard-coded,
+but hopefully this gets you pointed in the right direction to implement it your way.
+As it stands now, it should look like this:
+
+<p float="left">
+  <img src="./assets/photos/scid_callshade_photo.png" width="49%"/>
+  <img src="./assets/photos/scid_callscreen_photo.png" width="49%"/>
+</p>
+
 Play around with it, have fun, and think of more ways this can be used.
+
+### Credit:
+- Android Codelabs - Room with a View: https://codelabs.developers.google.com/codelabs/android-room-with-a-view-kotlin/
+- https://developer.android.com/reference/android/provider/ContactsContract.Directory
+- https://developer.android.com/reference/android/provider/ContactsContract.PhoneLookup

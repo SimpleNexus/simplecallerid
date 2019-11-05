@@ -75,12 +75,12 @@ class MainFragment : Fragment() {
                     || dialog.phone_type_spinner.selectedItem == null) return@setPositiveButton
 
                 val tempUser = User(
-                    dialog.first_name_input.text.toString(),
-                    dialog.last_name_input.text.toString(),
+                        dialog.first_name_input.text.toString(),
+                        dialog.last_name_input.text.toString(),
                         dialog.phone_input.text.toString(),
                         PhoneType.parse(dialog.phone_type_spinner.selectedItem.toString())
                     )
-                if (user == null) viewModel.insert(tempUser) else viewModel.update(tempUser)
+                if (user == null) viewModel.insert(tempUser) else viewModel.update(tempUser.apply { id = user.id })
             }
             .setNegativeButton(getString(R.string.cancel), null)
             .show()
