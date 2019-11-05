@@ -3,9 +3,11 @@ package com.example.simplecallerid.callerid
 import  android.content.ContentProvider
 import android.content.ContentValues
 import android.content.UriMatcher
+import android.content.res.AssetFileDescriptor
 import android.database.Cursor
 import android.database.MatrixCursor
 import android.net.Uri
+import android.os.Bundle
 import android.provider.ContactsContract.Directory
 import android.provider.ContactsContract.PhoneLookup
 import com.example.simplecallerid.R
@@ -20,13 +22,20 @@ class CallerIDProvider : ContentProvider() {
 
     private val uriMatcher = UriMatcher(UriMatcher.NO_MATCH)
 
+    private lateinit var authorityUri: Uri
+
     override fun onCreate(): Boolean {
         context?.let {
             val userDao = UserDatabase.getDatabase(it).userDao()
             userRepository = UserRepository(userDao)
             val authority = it.getString(R.string.callerid_authority)
-            uriMatcher.addURI(authority, "directories", DIRECTORIES)
-            uriMatcher.addURI(authority, "phone_lookup/*", PHONE_LOOKUP)
+            authorityUri = Uri.parse("content://$authority")
+
+            uriMatcher.apply {
+                addURI(authority, "directories", DIRECTORIES)
+                addURI(authority, "phone_lookup/*", PHONE_LOOKUP)
+                addURI(authority, PRIMARY_PHOTO_URI, PRIMARY_PHOTO)
+            }
         }
         return true
     }
@@ -60,6 +69,8 @@ class CallerIDProvider : ContentProvider() {
                                 PhoneLookup._ID -> -1
                                 PhoneLookup.DISPLAY_NAME -> u.fullName
                                 PhoneLookup.LABEL -> u.phoneLabel
+                                PhoneLookup.PHOTO_THUMBNAIL_URI,
+                                PhoneLookup.PHOTO_URI -> Uri.withAppendedPath(authorityUri, PRIMARY_PHOTO_URI)
                                 else -> null
                             }
                         }?.let { cursor.addRow(it) }
@@ -69,6 +80,13 @@ class CallerIDProvider : ContentProvider() {
             }
         }
         return null
+    }
+
+    override fun openAssetFile(uri: Uri, mode: String): AssetFileDescriptor? {
+        return when(uriMatcher.match(uri)) {
+            PRIMARY_PHOTO -> context?.resources?.openRawResourceFd(R.raw.phineas)
+            else -> null
+        }
     }
 
     override fun getType(uri: Uri): String? {
@@ -90,5 +108,8 @@ class CallerIDProvider : ContentProvider() {
     companion object {
         private const val DIRECTORIES = 1
         private const val PHONE_LOOKUP = 2
+        private const val PRIMARY_PHOTO = 3
+
+        private const val PRIMARY_PHOTO_URI = "photo/primary_photo"
     }
 }
